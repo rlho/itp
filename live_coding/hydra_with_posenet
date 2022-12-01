@@ -1,0 +1,90 @@
+await loadScript("https://unpkg.com/ml5@0.1.1/dist/ml5.min.js")
+
+
+// Initialize a new p5 instance It is only necessary to call this once
+p5 = new P5() // {width: window.innerWidth, height:window.innerHeight, mode: 'P2D'}
+
+// draw a rectangle at point 300, 100
+p5.rect(300, 100, 100, 100)
+
+// Note that P5 runs in instance mode, so all functions need to start with the variable where P5 was initialized (in this case p5)
+// reference for P5: https://P5js.org/reference/
+// explanation of instance mode: https://github.com/processing/P5.js/wiki/Global-and-instance-mode
+
+// When live coding, the "setup()" function of P5.js has basically no use; anything that you would have called in setup you can just call outside of any function.
+  let video;
+let poseNet;
+let poses = [];
+  video = p5.createCapture("VIDEO");
+  video.size(width, height);
+
+  // Create a new poseNet method with a single detection
+  poseNet = ml5.poseNet(video, modelReady);
+  // This sets up an event that fills the global variable "poses"
+  // with an array every time new poses are detected
+  poseNet.on('pose', function(results) {
+    poses = results;
+  });
+  // Hide the video element, and just show the canvas
+  video.hide();
+p5.clear()
+function modelReady() {
+  select('#status').html('Model Loaded');
+}
+
+for(var i = 0; i < 100; i++){
+  p5.fill(i*10, i%30, 255)
+  p5.rect(i*20, 200, 10,200)
+}
+
+// To live code animations, you can redefine the draw function of P5 as follows:
+// (a rectangle that follows the mouse)
+p5.draw = () => {
+  p5.fill(p5.mouseX/5, p5.mouseY/5, 255, 100)
+  p5.rect(p5.mouseX, p5.mouseY, 30, 150)
+    image(video, 0, 0, width, height);
+
+  // We can call both functions to draw all keypoints and the skeletons
+  p5.drawKeypoints();
+  p5.drawSkeleton();
+
+}
+// A function to draw ellipses over the detected keypoints
+function drawKeypoints()  {
+  // Loop through all the poses detected
+  for (let i = 0; i < poses.length; i++) {
+    // For each pose detected, loop through all the keypoints
+    let pose = poses[i].pose;
+    for (let j = 0; j < pose.keypoints.length; j++) {
+      // A keypoint is an object describing a body part (like rightArm or leftShoulder)
+      let keypoint = pose.keypoints[j];
+      // Only draw an ellipse is the pose probability is bigger than 0.2
+      if (keypoint.score > 0.2) {
+        fill(255, 0, 0);
+        noStroke();
+        ellipse(keypoint.position.x, keypoint.position.y, 10, 10);
+      }
+    }
+  }
+}
+
+// A function to draw the skeletons
+function drawSkeleton() {
+  // Loop through all the skeletons detected
+  for (let i = 0; i < poses.length; i++) {
+    let skeleton = poses[i].skeleton;
+    // For every skeleton, loop through all body connections
+    for (let j = 0; j < skeleton.length; j++) {
+      let partA = skeleton[j][0];
+      let partB = skeleton[j][1];
+      stroke(255, 0, 0);
+      line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
+    }
+  }
+}
+// To use P5 as an input to hydra, simply use the canvas as a source:
+s0.init({src: p5.canvas})
+
+// Then render the canvas
+src(s0).repeat().out()
+
