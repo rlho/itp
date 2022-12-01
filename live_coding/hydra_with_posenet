@@ -12,10 +12,10 @@ p5.rect(300, 100, 100, 100)
 // explanation of instance mode: https://github.com/processing/P5.js/wiki/Global-and-instance-mode
 
 // When live coding, the "setup()" function of P5.js has basically no use; anything that you would have called in setup you can just call outside of any function.
-  let video;
+
 let poseNet;
 let poses = [];
-  video = p5.createCapture("VIDEO");
+  let video = p5.createCapture("VIDEO");
   video.size(width, height);
 
   // Create a new poseNet method with a single detection
@@ -32,21 +32,17 @@ function modelReady() {
   select('#status').html('Model Loaded');
 }
 
-for(var i = 0; i < 100; i++){
-  p5.fill(i*10, i%30, 255)
-  p5.rect(i*20, 200, 10,200)
-}
+
 
 // To live code animations, you can redefine the draw function of P5 as follows:
 // (a rectangle that follows the mouse)
 p5.draw = () => {
-  p5.fill(p5.mouseX/5, p5.mouseY/5, 255, 100)
-  p5.rect(p5.mouseX, p5.mouseY, 30, 150)
-    image(video, 0, 0, width, height);
+
+  p5.image(video, 0, 0, 500, 500);
 
   // We can call both functions to draw all keypoints and the skeletons
-  p5.drawKeypoints();
-  p5.drawSkeleton();
+  drawKeypoints();
+  drawSkeleton();
 
 }
 // A function to draw ellipses over the detected keypoints
@@ -86,5 +82,4 @@ function drawSkeleton() {
 s0.init({src: p5.canvas})
 
 // Then render the canvas
-src(s0).repeat().out()
-
+src(s0).out()
