@@ -111,22 +111,79 @@ void setup()
 void loop()
 {
 
-  if (sensor0.isRangeComplete())
-  {
-    int result0 = sensor0.readRangeResult();
-    Serial.print("result0: ");
-    Serial.println(result0);
-  }
   long irValue = particleSensor.getIR();
-
   if (checkForBeat(irValue) == true)
   {
-    turnEverythingOn();
-    Serial.println("blink");
+    Serial.print("get pulse!");
+    if (sensor0.isRangeComplete())
+    {
+      int result0 = sensor0.readRangeResult();
+      Serial.print("result0: ");
+      Serial.println(result0);
+      if (result0 > 200)
+      {
+        layer1();
+      }
+      else if (result0 > 150)
+      {
+        layer2();
+      }
+      else if (result0 >= 100)
+      {
+        layer3();
+      }
+      else if (result0 < 100)
+      {
+        turnEverythingOn();
+      }
+    }
   }
   else
   {
+    turnEverythingOff();
   }
+
+  if (irValue < 50000)
+  {
+    randomRain();
+  }
+}
+
+////////////////////////////////////////////////////////////turn all on
+void layer1()
+{
+  for (int i = 0; i < 16; i++)
+  {
+    digitalWrite(column[i], 0);
+  }
+  digitalWrite(layer[0], 1);
+  delay(700);
+}
+
+////////////////////////////////////////////////////////////turn all on
+void layer2()
+{
+  for (int i = 0; i < 16; i++)
+  {
+    digitalWrite(column[i], 0);
+  }
+  digitalWrite(layer[0], 1);
+  digitalWrite(layer[1], 1);
+  delay(700);
+}
+
+////////////////////////////////////////////////////////////turn all on
+void layer3()
+{
+
+  for (int i = 0; i < 16; i++)
+  {
+    digitalWrite(column[i], 0);
+  }
+  digitalWrite(layer[0], 1);
+  digitalWrite(layer[1], 1);
+  digitalWrite(layer[2], 1);
+  delay(700);
 }
 
 ////////////////////////////////////////////////////////////turn all on
@@ -141,6 +198,7 @@ void turnEverythingOn()
   {
     digitalWrite(layer[i], 1);
   }
+  delay(700);
 }
 
 ///////////////////////////////////////////////////////turn columns off
