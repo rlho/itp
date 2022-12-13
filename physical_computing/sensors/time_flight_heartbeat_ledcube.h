@@ -53,8 +53,7 @@ void setup()
   Serial.begin(9600);
   while (!Serial)
     ;
-  // configure the button pin as input:
-  pinMode(buttonPin, INPUT_PULLUP);
+
   // configure the built-in LED as an output:
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -75,6 +74,7 @@ void setup()
 
   digitalWrite(sensor2ShutdownPin, HIGH);
   digitalWrite(sensor2ShutdownPin, LOW);
+
 
   // Heartbeat Sensor
   if (!particleSensor.begin(Wire)) // Use default I2C port, 400kHz speed
@@ -120,21 +120,15 @@ void loop()
       int result0 = sensor0.readRangeResult();
       Serial.print("result0: ");
       Serial.println(result0);
-      if (result0 > 200)
-      {
+      if(result0 > 1000){
         layer1();
-      }
-      else if (result0 > 150)
-      {
+      } else if(result0 > 500) {
         layer2();
-      }
-      else if (result0 >= 100)
-      {
+      }else if(result0 >= 100) {
         layer3();
       }
-      else if (result0 < 100)
-      {
-        turnEverythingOn();
+      else {
+        layer4();
       }
     }
   }
@@ -143,8 +137,7 @@ void loop()
     turnEverythingOff();
   }
 
-  if (irValue < 50000)
-  {
+  if (irValue < 50000) {
     randomRain();
   }
 }
@@ -152,53 +145,137 @@ void loop()
 ////////////////////////////////////////////////////////////turn all on
 void layer1()
 {
+    digitalWrite(layer[0], 1);
+
+
+    digitalWrite(column[5], 0);
+    digitalWrite(column[6], 0);
+    digitalWrite(column[9], 0);
+    digitalWrite(column[10], 0);
+
+    delay(200);
   for (int i = 0; i < 16; i++)
   {
     digitalWrite(column[i], 0);
   }
-  digitalWrite(layer[0], 1);
-  delay(700);
+    delay(700);
 }
+
 
 ////////////////////////////////////////////////////////////turn all on
 void layer2()
 {
+
+    digitalWrite(layer[0], 1);
+    digitalWrite(layer[2], 1);
+    
+    digitalWrite(column[5], 0);
+    digitalWrite(column[6], 0);
+    digitalWrite(column[9], 0);
+    digitalWrite(column[10], 0);
+
+     delay(200);
   for (int i = 0; i < 16; i++)
   {
     digitalWrite(column[i], 0);
   }
-  digitalWrite(layer[0], 1);
-  digitalWrite(layer[1], 1);
-  delay(700);
+    delay(700);
 }
+
+
 
 ////////////////////////////////////////////////////////////turn all on
 void layer3()
 {
 
-  for (int i = 0; i < 16; i++)
-  {
-    digitalWrite(column[i], 0);
-  }
-  digitalWrite(layer[0], 1);
-  digitalWrite(layer[1], 1);
-  digitalWrite(layer[2], 1);
-  delay(700);
+    
+    digitalWrite(layer[1], 1);
+    digitalWrite(layer[2], 1);
+
+    digitalWrite(column[5], 0);
+    digitalWrite(column[6], 0);
+    digitalWrite(column[9], 0);
+    digitalWrite(column[10], 0);
+    
+    delay(200);
+    digitalWrite(layer[0], 1);
+    for (int i = 0; i < 16; i++)
+    {
+      digitalWrite(column[i], 0);
+    }
+    delay(700);
 }
 
+
+
+void layer4()
+{
+
+    
+    digitalWrite(layer[2], 1);
+    digitalWrite(layer[1], 1);
+
+    digitalWrite(column[5], 0);
+    digitalWrite(column[6], 0);
+    digitalWrite(column[9], 0);
+    digitalWrite(column[10], 0);
+    delay(100);
+    digitalWrite(layer[0], 1);
+    digitalWrite(layer[3], 1);
+
+    for (int i = 0; i < 16; i++)
+    {
+      digitalWrite(column[i], 0);
+    }
+    delay(700);
+}
 ////////////////////////////////////////////////////////////turn all on
 void turnEverythingOn()
-{
-  for (int i = 0; i < 16; i++)
   {
-    digitalWrite(column[i], 0);
-  }
   // turning on layers
   for (int i = 0; i < 4; i++)
   {
     digitalWrite(layer[i], 1);
   }
-  delay(700);
+
+     int x = 10;
+
+    // spiral in clockwise
+    digitalWrite(column[0], 0);
+    delay(x);
+    digitalWrite(column[1], 0);
+    delay(x);
+    digitalWrite(column[2], 0);
+    delay(x);
+    digitalWrite(column[3], 0);
+    delay(x);
+    digitalWrite(column[7], 0);
+    delay(x);
+    digitalWrite(column[11], 0);
+    delay(x);
+    digitalWrite(column[15], 0);
+    delay(x);
+    digitalWrite(column[14], 0);
+    delay(x);
+    digitalWrite(column[13], 0);
+    delay(x);
+    digitalWrite(column[12], 0);
+    delay(x);
+    digitalWrite(column[8], 0);
+    delay(x);
+    digitalWrite(column[4], 0);
+    delay(x);
+    digitalWrite(column[5], 0);
+    delay(x);
+    digitalWrite(column[6], 0);
+    delay(x);
+    digitalWrite(column[10], 0);
+    delay(x);
+    digitalWrite(column[9], 0);
+    delay(x);
+
+    
+   delay(700);
 }
 
 ///////////////////////////////////////////////////////turn columns off
